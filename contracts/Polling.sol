@@ -26,16 +26,32 @@ contract Polling {
         author = msg.sender;
     }
 
-    modifier checkUserExistence() {
+    modifier canCreateAccount() {
         require(!users[msg.sender].created, "User already exists !");
         _;
     }
 
-    function createUser(string memory _name) public checkUserExistence {
+    function createUser(string memory _name) public canCreateAccount {
         users[msg.sender].name = _name;
         users[msg.sender].created = true;
         userAddresses.push(msg.sender);
 
         emit UserCreated(_name, msg.sender, "User created");
+    }
+
+    modifier canCreatePoll() {
+        require(users[msg.sender].created, "User account doesn't exist !");
+        _;
+    }
+
+    function createPoll(string memory _content) public canCreatePoll {
+        Poll memory poll = Poll(
+            keccak256(abi.encodePacked(_content)),
+            msg.sender,
+            _content,
+            now
+        );
+
+        users[msg.sender].polls.push(poll);
     }
 }
