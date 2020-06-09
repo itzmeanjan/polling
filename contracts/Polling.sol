@@ -20,7 +20,8 @@ contract Polling {
     mapping(address => User) users;
     address[] userAddresses;
 
-    event UserCreated(string name, address identifier, string comment);
+    event UserCreated(string name, address identifier);
+    event PollCreated(string name, address identifier, bytes32 pollId);
 
     constructor() public {
         author = msg.sender;
@@ -36,7 +37,7 @@ contract Polling {
         users[msg.sender].created = true;
         userAddresses.push(msg.sender);
 
-        emit UserCreated(_name, msg.sender, "User created");
+        emit UserCreated(_name, msg.sender);
     }
 
     modifier canCreatePoll() {
@@ -45,13 +46,10 @@ contract Polling {
     }
 
     function createPoll(string memory _content) public canCreatePoll {
-        Poll memory poll = Poll(
-            keccak256(abi.encodePacked(_content)),
-            msg.sender,
-            _content,
-            now
-        );
-
+        bytes32 pollId = keccak256(abi.encodePacked(_content));
+        Poll memory poll = Poll(pollId, msg.sender, _content, now);
         users[msg.sender].polls.push(poll);
+
+        emit PollCreated(users[msg.sender].name, msg.sender, pollId);
     }
 }
