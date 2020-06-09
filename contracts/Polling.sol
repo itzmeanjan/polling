@@ -13,6 +13,7 @@ contract Polling {
 
     struct User {
         string name;
+        bool created;
         Poll[] polls;
     }
 
@@ -25,10 +26,16 @@ contract Polling {
         author = msg.sender;
     }
 
-    function createUser(string memory _name) public {
+    modifier checkUserExistence() {
+        require(!users[msg.sender].created, "User already exists !");
+        _;
+    }
+
+    function createUser(string memory _name) public checkUserExistence {
         users[msg.sender].name = _name;
+        users[msg.sender].created = true;
         userAddresses.push(msg.sender);
 
-        emit UserCreated(_name, msg.sender, "user created");
+        emit UserCreated(_name, msg.sender, "User created");
     }
 }
