@@ -15,8 +15,9 @@ contract Polling {
         address creator;
         string title;
         uint256 timeStamp;
-        uint256 pollOptionCount;
-        mapping(uint256 => PollOption) pollOptions;
+        uint8 pollOptionCount;
+        mapping(uint8 => PollOption) pollOptions;
+        mapping(address => uint8) votes;
     }
 
     struct User {
@@ -130,5 +131,37 @@ contract Polling {
         Poll storage poll = polls[_pollId];
         poll.pollOptions[poll.pollOptionCount] = pollOption;
         poll.pollOptionCount++;
+    }
+
+    modifier checkPollExistance(bytes32 _pollId) {
+        require(pollIdToUser[_pollId] != address(0), "Poll doesn't exist !");
+        _;
+    }
+
+    modifier checkDuplicateVote(bytes32 _pollId) {
+        require(
+            polls[_pollId].votes[msg.sender] == 0,
+            "Attempt to cast duplicate vote !"
+        );
+        _;
+    }
+
+    modifier isValidOptionToCastVote(bytes32 _pollId, uint8 _option) {
+        require(
+            _option >= 0 && _option < polls[_pollId].pollOptionCount,
+            "Invalid option, can't cast vote !"
+        );
+        _;
+    }
+
+    function castVote(bytes32 _pollId, uint8 _option)
+        public
+        checkPollExistance(_pollId)
+        checkDuplicateVote(_pollId)
+        isValidOptionToCastVote(_pollId, _option)
+    {
+        Poll storage poll = polls[_pollId];
+        poll.pollOptions[_option].voteCount++;
+        poll.votes[msg.sender] = _option + 1;
     }
 }
