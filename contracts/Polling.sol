@@ -4,6 +4,7 @@ pragma solidity ^0.6.6;
 
 contract Polling {
     address payable public author;
+    uint8 maxPollOptionCount;
 
     struct PollOption {
         string content;
@@ -37,6 +38,28 @@ contract Polling {
 
     constructor() public {
         author = msg.sender;
+        maxPollOptionCount = 4;
+    }
+
+    modifier onlyAuthor() {
+        require(author == msg.sender, "You're not author !");
+        _;
+    }
+
+    modifier isValidMaxPollOptionCount(uint8 count) {
+        require(
+            count >= 2 && count <= 16,
+            "Max poll option count out of range !"
+        );
+        _;
+    }
+
+    function setMaxPollOptionCount(uint8 count)
+        external
+        onlyAuthor
+        isValidMaxPollOptionCount(count)
+    {
+        maxPollOptionCount = count;
     }
 
     modifier canCreateAccount() {
