@@ -6,7 +6,6 @@ contract Polling {
     address payable public author;
 
     struct PollOption {
-        uint256 index;
         string content;
         uint256 voteCount;
     }
@@ -16,7 +15,8 @@ contract Polling {
         address creator;
         string title;
         uint256 timeStamp;
-        PollOption[] options;
+        uint256 pollOptionCount;
+        mapping(uint256 => PollOption) pollOptions;
     }
 
     struct User {
