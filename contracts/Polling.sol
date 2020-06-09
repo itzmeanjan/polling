@@ -5,11 +5,18 @@ pragma solidity ^0.6.6;
 contract Polling {
     address payable public author;
 
+    struct PollOption {
+        uint256 index;
+        string content;
+        uint256 voteCount;
+    }
+
     struct Poll {
         bytes32 id;
         address creator;
-        string content;
+        string title;
         uint256 timeStamp;
+        PollOption[] options;
     }
 
     struct User {
@@ -46,11 +53,23 @@ contract Polling {
         _;
     }
 
-    function createPoll(string memory _content) public canCreatePoll {
-        bytes32 pollId = keccak256(abi.encodePacked(_content));
-        Poll memory poll = Poll(pollId, msg.sender, _content, now);
+    function createPoll(string memory _title)
+        public
+        canCreatePoll
+        returns (bytes32)
+    {
+        bytes32 pollId = keccak256(abi.encode(_title));
+        Poll memory poll;
+
+        poll.id = pollId;
+        poll.creator = msg.sender;
+        poll.title = _title;
+        poll.timeStamp = now;
+
         users[msg.sender].polls.push(poll);
 
         emit PollCreated(users[msg.sender].name, msg.sender, pollId);
+
+        return pollId;
     }
 }
