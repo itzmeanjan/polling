@@ -22,11 +22,15 @@ contract Polling {
     struct User {
         string name;
         bool created;
-        Poll[] polls;
+        uint256 pollCount;
+        mapping(uint256 => Poll) polls;
     }
 
     mapping(address => User) users;
     address[] userAddresses;
+
+    mapping(bytes32 => address) pollIdToUser;
+    bytes32[] pollIds;
 
     event UserCreated(string name, address identifier);
     event PollCreated(string name, address identifier, bytes32 pollId);
@@ -41,8 +45,12 @@ contract Polling {
     }
 
     function createUser(string memory _name) public canCreateAccount {
-        users[msg.sender].name = _name;
-        users[msg.sender].created = true;
+        User memory user;
+
+        user.name = _name;
+        user.created = true;
+
+        users[msg.sender] = user;
         userAddresses.push(msg.sender);
 
         emit UserCreated(_name, msg.sender);
@@ -58,7 +66,9 @@ contract Polling {
         canCreatePoll
         returns (bytes32)
     {
-        bytes32 pollId = keccak256(abi.encode(_title));
+        bytes32 pollId = keccak256(
+            abi.encodePacked(_title, msg.sender, users[msg.sender].pollCount)
+        );
         Poll memory poll;
 
         poll.id = pollId;
@@ -66,10 +76,16 @@ contract Polling {
         poll.title = _title;
         poll.timeStamp = now;
 
-        users[msg.sender].polls.push(poll);
+        users[msg.sender].polls[users[msg.sender].pollCount] = poll;
+        users[msg.sender].pollCount++;
+
+        pollIdToUser[pollId] = msg.sender;
+        pollIds.push(pollId);
 
         emit PollCreated(users[msg.sender].name, msg.sender, pollId);
 
         return pollId;
     }
+
+    function addPollOption(bytes32 _pollId, string memory _pollOption) public {}
 }
