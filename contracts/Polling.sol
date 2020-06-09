@@ -112,6 +112,10 @@ contract Polling {
 
     modifier canAddPollOption(bytes32 _pollId) {
         require(pollIdToUser[_pollId] == msg.sender, "You're not allowed !");
+        require(
+            polls[_pollId].pollOptionCount < maxPollOptionCount,
+            "Reached max poll option count !"
+        );
         _;
     }
 
