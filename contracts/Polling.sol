@@ -19,6 +19,8 @@ contract Polling {
     mapping(address => User) users;
     address[] userAddresses;
 
+    event UserCreated(string name, address identifier, string comment);
+
     constructor() public {
         author = msg.sender;
     }
@@ -26,5 +28,7 @@ contract Polling {
     function createUser(string memory _name) public {
         users[msg.sender].name = _name;
         userAddresses.push(msg.sender);
+
+        emit UserCreated(_name, msg.sender, "user created");
     }
 }
