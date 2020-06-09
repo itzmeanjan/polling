@@ -2,7 +2,7 @@ pragma solidity ^0.6.6;
 
 
 contract Polling {
-    address public author;
+    address payable public author;
 
     struct Poll {
         bytes32 id;
@@ -13,11 +13,18 @@ contract Polling {
 
     struct User {
         string name;
-        address identifier;
         Poll[] polls;
     }
 
+    mapping(address => User) users;
+    address[] userAddresses;
+
     constructor() public {
         author = msg.sender;
+    }
+
+    function createUser(string memory _name) public {
+        users[msg.sender].name = _name;
+        userAddresses.push(msg.sender);
     }
 }
