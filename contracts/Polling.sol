@@ -11,7 +11,6 @@ contract Polling {
     }
 
     struct Poll {
-        bytes32 id;
         address creator;
         string title;
         uint256 timeStamp;
@@ -23,12 +22,13 @@ contract Polling {
         string name;
         bool created;
         uint256 pollCount;
-        mapping(uint256 => Poll) polls;
+        mapping(uint256 => bytes32) ids;
     }
 
     mapping(address => User) users;
     address[] userAddresses;
 
+    mapping(bytes32 => Poll) polls;
     mapping(bytes32 => address) pollIdToUser;
     bytes32[] pollIds;
 
@@ -71,14 +71,14 @@ contract Polling {
         );
         Poll memory poll;
 
-        poll.id = pollId;
         poll.creator = msg.sender;
         poll.title = _title;
         poll.timeStamp = now;
 
-        users[msg.sender].polls[users[msg.sender].pollCount] = poll;
+        users[msg.sender].ids[users[msg.sender].pollCount] = pollId;
         users[msg.sender].pollCount++;
 
+        polls[pollId] = poll;
         pollIdToUser[pollId] = msg.sender;
         pollIds.push(pollId);
 
@@ -87,5 +87,21 @@ contract Polling {
         return pollId;
     }
 
-    function addPollOption(bytes32 _pollId, string memory _pollOption) public {}
+    modifier canAddPollOption(bytes32 _pollId) {
+        require(pollIdToUser[_pollId] == msg.sender, "You're not allowed !");
+        _;
+    }
+
+    function addPollOption(bytes32 _pollId, string memory _pollOption)
+        public
+        canAddPollOption(_pollId)
+    {
+        PollOption memory pollOption;
+
+        pollOption.content = _pollOption;
+
+        Poll storage poll = polls[_pollId];
+        poll.pollOptions[poll.pollOptionCount] = pollOption;
+        poll.pollOptionCount++;
+    }
 }
