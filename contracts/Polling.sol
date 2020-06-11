@@ -223,4 +223,24 @@ contract Polling {
             polls[_pollId].startTimeStamp <= now &&
             polls[_pollId].endTimeStamp > now;
     }
+
+    function getRecentXActivePolls(uint8 x)
+        public
+        view
+        returns (bytes32[] memory)
+    {
+        require(x > 0, "Can't return 0 recent polls !");
+
+        bytes32[] memory recentPolls = new bytes32[](x);
+        uint8 idx = 0;
+
+        for (uint256 i = pollIds.length - 1; i >= 0 && idx < x; i++) {
+            if (isPollActive(pollIds[i])) {
+                recentPolls[idx] = pollIds[i];
+                idx++;
+            }
+        }
+
+        return recentPolls;
+    }
 }
