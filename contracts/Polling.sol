@@ -216,4 +216,11 @@ contract Polling {
         poll.pollOptions[_option].voteCount++;
         poll.votes[msg.sender] = _option + 1;
     }
+
+    // Added check for poll activation
+    function isPollActive(bytes32 _pollId) private view returns (bool) {
+        return
+            polls[_pollId].startTimeStamp <= now &&
+            polls[_pollId].endTimeStamp > now;
+    }
 }
