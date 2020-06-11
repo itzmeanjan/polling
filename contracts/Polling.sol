@@ -245,21 +245,41 @@ contract Polling {
         return recentPolls;
     }
 
-    // checks whether function invoker has account or not
+    // Checks whether given address has account or not ( in this platform )
     // if yes, they are allowed to proceed further
-    modifier accountCreated() {
-        require(users[msg.sender].created, "Account not found !");
+    modifier accountCreated(address _addr) {
+        require(users[_addr].created, "Account not found !");
         _;
     }
 
-    // Returns invoker's account name ( i.e. account Owner name )
-    function getMyName() public view accountCreated returns (string memory) {
-        return users[msg.sender].name;
+    // Returns person name at account in given address
+    function getAccountNameByAddress(address _addr)
+        public
+        view
+        accountCreated(_addr)
+        returns (string memory)
+    {
+        return users[_addr].name;
+    }
+
+    // Get person name of invoker account
+    function getMyAccountName() public view returns (string memory) {
+        return getAccountNameByAddress(msg.sender);
+    }
+
+    // Returns number of polls created by given address
+    function getAccountPollCountByAddress(address _addr)
+        public
+        view
+        accountCreated(_addr)
+        returns (uint256)
+    {
+        return users[_addr].pollCount;
     }
 
     // Returns number of poll created by this account
-    function getMyPollCount() public view accountCreated returns (uint256) {
-        return users[msg.sender].pollCount;
+    function getMyPollCount() public view returns (uint256) {
+        return getAccountPollCountByAddress(msg.sender);
     }
 
     // Given poll index ( < number of polls created by msg.sender ),
