@@ -14,7 +14,8 @@ contract Polling {
     struct Poll {
         address creator;
         string title;
-        uint256 timeStamp;
+        uint256 startTimeStamp;
+        uint256 endTimeStamp;
         bool active;
         uint8 pollOptionCount;
         mapping(uint8 => PollOption) pollOptions;
@@ -98,7 +99,6 @@ contract Polling {
 
         poll.creator = msg.sender;
         poll.title = _title;
-        poll.timeStamp = now;
 
         users[msg.sender].ids[users[msg.sender].pollCount] = pollId;
         users[msg.sender].pollCount++;
@@ -153,12 +153,23 @@ contract Polling {
         _;
     }
 
-    function makePollLive(bytes32 _pollId)
+    modifier isPollEndTimeValid(bytes32 _pollId, uint8 _hours) {
+        require(
+            _hours > 0 && _hours <= 72,
+            "Poll can be live for >= 1 hour && <= 72 hours"
+        );
+        _;
+    }
+
+    function makePollLive(bytes32 _pollId, uint8 _activeForHours)
         public
         didYouCreatePoll(_pollId)
         isPollAlreadyLive(_pollId)
         areEnoughPollOptionsSet(_pollId)
+        isPollEndTimeValid(_pollId, _activeForHours)
     {
+        polls[_pollId].startTimeStamp = now;
+        polls[_pollId].endTimeStamp = now + (_activeForHours * 1 hours);
         polls[_pollId].active = true;
     }
 
