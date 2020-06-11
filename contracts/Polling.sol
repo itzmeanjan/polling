@@ -16,6 +16,7 @@ contract Polling {
         string title;
         uint256 startTimeStamp;
         uint256 endTimeStamp;
+        uint256 totalVotesCasted;
         uint8 pollOptionCount;
         mapping(uint8 => PollOption) pollOptions;
         mapping(address => uint8) votes;
@@ -213,6 +214,7 @@ contract Polling {
         isValidOptionToCastVote(_pollId, _option)
     {
         Poll storage poll = polls[_pollId];
+        poll.totalVotesCasted++;
         poll.pollOptions[_option].voteCount++;
         poll.votes[msg.sender] = _option + 1;
     }
@@ -342,6 +344,16 @@ contract Polling {
         returns (uint256)
     {
         return polls[_pollId].endTimeStamp;
+    }
+
+    // Given pollId, looks up total #-of votes casted
+    function getTotalVotesCastedByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (uint256)
+    {
+        return polls[_pollId].totalVotesCasted;
     }
 
     // Given pollId, returns number of options present
