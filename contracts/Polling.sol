@@ -14,7 +14,8 @@ contract Polling {
     struct Poll {
         address creator;
         string title;
-        uint256 timeStamp;
+        uint256 startTimeStamp;
+        uint256 endTimeStamp;
         uint8 pollOptionCount;
         mapping(uint8 => PollOption) pollOptions;
         mapping(address => uint8) votes;
@@ -35,7 +36,7 @@ contract Polling {
     bytes32[] pollIds;
 
     event UserCreated(string name, address identifier);
-    event PollCreated(string name, address identifier, bytes32 pollId);
+    event PollIsLive(string name, address identifier, bytes32 pollId);
 
     constructor() public {
         author = msg.sender;
@@ -97,7 +98,6 @@ contract Polling {
 
         poll.creator = msg.sender;
         poll.title = _title;
-        poll.timeStamp = now;
 
         users[msg.sender].ids[users[msg.sender].pollCount] = pollId;
         users[msg.sender].pollCount++;
@@ -106,13 +106,15 @@ contract Polling {
         pollIdToUser[pollId] = msg.sender;
         pollIds.push(pollId);
 
-        emit PollCreated(users[msg.sender].name, msg.sender, pollId);
-
         return pollId;
     }
 
-    modifier canAddPollOption(bytes32 _pollId) {
+    modifier didYouCreatePoll(bytes32 _pollId) {
         require(pollIdToUser[_pollId] == msg.sender, "You're not allowed !");
+        _;
+    }
+
+    modifier canAddPollOption(bytes32 _pollId) {
         require(
             polls[_pollId].pollOptionCount < maxPollOptionCount,
             "Reached max poll option count !"
@@ -122,6 +124,8 @@ contract Polling {
 
     function addPollOption(bytes32 _pollId, string memory _pollOption)
         public
+        didYouCreatePoll(_pollId)
+        isPollAlreadyLive(_pollId)
         canAddPollOption(_pollId)
     {
         PollOption memory pollOption;
@@ -133,8 +137,55 @@ contract Polling {
         poll.pollOptionCount++;
     }
 
+    modifier isPollAlreadyLive(bytes32 _pollId) {
+        require(
+            polls[_pollId].startTimeStamp != 0 &&
+                polls[_pollId].endTimeStamp != 0,
+            "Poll already live !"
+        );
+        _;
+    }
+
+    modifier areEnoughPollOptionsSet(bytes32 _pollId) {
+        require(
+            polls[_pollId].pollOptionCount >= 2,
+            "Atleast 2 options required !"
+        );
+        _;
+    }
+
+    modifier isPollEndTimeValid(bytes32 _pollId, uint8 _hours) {
+        require(
+            _hours > 0 && _hours <= 72,
+            "Poll can be live for >= 1 hour && <= 72 hours"
+        );
+        _;
+    }
+
+    function makePollLive(bytes32 _pollId, uint8 _activeForHours)
+        public
+        didYouCreatePoll(_pollId)
+        isPollAlreadyLive(_pollId)
+        areEnoughPollOptionsSet(_pollId)
+        isPollEndTimeValid(_pollId, _activeForHours)
+    {
+        polls[_pollId].startTimeStamp = now;
+        polls[_pollId].endTimeStamp = now + (_activeForHours * 1 hours);
+
+        emit PollIsLive(users[msg.sender].name, msg.sender, _pollId);
+    }
+
     modifier checkPollExistance(bytes32 _pollId) {
         require(pollIdToUser[_pollId] != address(0), "Poll doesn't exist !");
+        _;
+    }
+
+    modifier isPollLive(bytes32 _pollId) {
+        require(
+            polls[_pollId].startTimeStamp <= now &&
+                polls[_pollId].endTimeStamp > now,
+            "Poll not live !"
+        );
         _;
     }
 
@@ -157,6 +208,7 @@ contract Polling {
     function castVote(bytes32 _pollId, uint8 _option)
         public
         checkPollExistance(_pollId)
+        isPollLive(_pollId)
         checkDuplicateVote(_pollId)
         isValidOptionToCastVote(_pollId, _option)
     {
