@@ -141,7 +141,10 @@ contract Polling {
     }
 
     modifier areEnoughPollOptionsSet(bytes32 _pollId) {
-        require(polls[_pollId].pollOptionCount >= 2, "");
+        require(
+            polls[_pollId].pollOptionCount >= 2,
+            "Atleast 2 options required !"
+        );
         _;
     }
 
