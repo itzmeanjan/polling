@@ -16,6 +16,7 @@ contract Polling {
         string title;
         uint256 startTimeStamp;
         uint256 endTimeStamp;
+        uint256 totalVotesCasted;
         uint8 pollOptionCount;
         mapping(uint8 => PollOption) pollOptions;
         mapping(address => uint8) votes;
@@ -37,6 +38,13 @@ contract Polling {
 
     event UserCreated(string name, address identifier);
     event PollIsLive(string name, address identifier, bytes32 pollId);
+    event PollResult(
+        address identifier,
+        bytes32 pollId,
+        uint8 winningOptionIndex,
+        uint256 winningOptionVoteCount,
+        uint256 totalVotesCasted
+    );
 
     constructor() public {
         author = msg.sender;
@@ -213,7 +221,251 @@ contract Polling {
         isValidOptionToCastVote(_pollId, _option)
     {
         Poll storage poll = polls[_pollId];
+        poll.totalVotesCasted++;
         poll.pollOptions[_option].voteCount++;
         poll.votes[msg.sender] = _option + 1;
+    }
+
+    // Added check for poll activation
+    function isPollActive(bytes32 _pollId) public view returns (bool) {
+        return
+            polls[_pollId].startTimeStamp <= now &&
+            polls[_pollId].endTimeStamp > now;
+    }
+
+    // Given number of recent active polls required, returns a list of them
+    function getRecentXActivePolls(uint8 x)
+        public
+        view
+        returns (bytes32[] memory)
+    {
+        require(x > 0, "Can't return 0 recent polls !");
+
+        bytes32[] memory recentPolls = new bytes32[](x);
+        uint8 idx = 0;
+
+        for (uint256 i = pollIds.length - 1; i >= 0 && idx < x; i--) {
+            if (isPollActive(pollIds[i])) {
+                recentPolls[idx] = pollIds[i];
+                idx++;
+            }
+        }
+
+        return recentPolls;
+    }
+
+    // Checks whether given address has account or not ( in this platform )
+    // if yes, they are allowed to proceed further
+    modifier accountCreated(address _addr) {
+        require(users[_addr].created, "Account not found !");
+        _;
+    }
+
+    // Returns person name at account in given address
+    function getAccountNameByAddress(address _addr)
+        public
+        view
+        accountCreated(_addr)
+        returns (string memory)
+    {
+        return users[_addr].name;
+    }
+
+    // Get person name of invoker account
+    function getMyAccountName() public view returns (string memory) {
+        return getAccountNameByAddress(msg.sender);
+    }
+
+    // Returns number of polls created by given address
+    function getAccountPollCountByAddress(address _addr)
+        public
+        view
+        accountCreated(_addr)
+        returns (uint256)
+    {
+        return users[_addr].pollCount;
+    }
+
+    // Returns number of poll created by this account
+    function getMyPollCount() public view returns (uint256) {
+        return getAccountPollCountByAddress(msg.sender);
+    }
+
+    // Returns unique pollId, given creator address & index of
+    // poll ( >= 0 && < #-of all polls created by creator )
+    function getPollIdByAddressAndIndex(address _addr, uint256 index)
+        public
+        view
+        accountCreated(_addr)
+        returns (bytes32)
+    {
+        require(
+            index < users[_addr].pollCount,
+            "Invalid index for looking up PollId !"
+        );
+
+        return users[_addr].ids[index];
+    }
+
+    // Given poll index ( < number of polls created by msg.sender ),
+    // it'll lookup pollId from my account
+    function getMyPollIdByIndex(uint256 index) public view returns (bytes32) {
+        return getPollIdByAddressAndIndex(msg.sender, index);
+    }
+
+    // Given pollId, returns account which created this poll
+    function getCreatorAddressByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (address)
+    {
+        return pollIdToUser[_pollId];
+    }
+
+    // Returns title of poll, by given pollId
+    function getTitleByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (string memory)
+    {
+        return polls[_pollId].title;
+    }
+
+    // Get timestamp when poll was set active
+    function getStartTimeByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (uint256)
+    {
+        return polls[_pollId].startTimeStamp;
+    }
+
+    // Get timestamp when poll will go deactive
+    function getEndTimeByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (uint256)
+    {
+        return polls[_pollId].endTimeStamp;
+    }
+
+    // Given pollId, looks up total #-of votes casted
+    function getTotalVotesCastedByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (uint256)
+    {
+        return polls[_pollId].totalVotesCasted;
+    }
+
+    // Given pollId, returns number of options present
+    function getPollOptionCountByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (uint8)
+    {
+        return polls[_pollId].pollOptionCount;
+    }
+
+    // Given pollId & option index, returns content of that option
+    function getPollOptionContentByPollIdAndIndex(bytes32 _pollId, uint8 index)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (string memory)
+    {
+        require(
+            index < polls[_pollId].pollOptionCount,
+            "Invalid index for looking up PollOption !"
+        );
+
+        return polls[_pollId].pollOptions[index].content;
+    }
+
+    // Given pollId & option index, returns votes casted on that option
+    function getPollOptionVoteCountByPollIdAndIndex(
+        bytes32 _pollId,
+        uint8 index
+    ) public view checkPollExistance(_pollId) returns (uint256) {
+        require(
+            index < polls[_pollId].pollOptionCount,
+            "Invalid index for looking up PollOption !"
+        );
+
+        return polls[_pollId].pollOptions[index].voteCount;
+    }
+
+    // Given pollId, checks what's current status of poll i.e.
+    // which is winning option upto this point, returns index & vote count of winning option
+    //
+    // poll must be started before invoking this function, otherwise fails
+    function getWinningOptionIndexAndVotesByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (uint8, uint256)
+    {
+        require(
+            polls[_pollId].endTimeStamp != 0,
+            "Poll not even started yet !"
+        );
+
+        uint8 count = getPollOptionCountByPollId(_pollId);
+
+        uint8 maxVoteIndex = 0;
+        uint256 maxVoteCount = getPollOptionVoteCountByPollIdAndIndex(
+            _pollId,
+            maxVoteIndex
+        );
+
+        for (uint8 i = 1; i < count; i++) {
+            uint256 _tmp = getPollOptionVoteCountByPollIdAndIndex(_pollId, i);
+            if (_tmp > maxVoteCount) {
+                maxVoteIndex = i;
+                maxVoteCount = _tmp;
+            }
+        }
+
+        return (maxVoteIndex, maxVoteCount);
+    }
+
+    // Given pollId, and poll creator is invoking this function,
+    // it'll announce that poll has ended with result, where result is event emitted
+    //
+    // Make sure poll has ended, before invoking this function, otherwise it'll fail
+    function announcePollResult(bytes32 _pollId)
+        public
+        didYouCreatePoll(_pollId)
+    {
+        require(polls[_pollId].endTimeStamp <= now, "Poll not ended yet !");
+
+        (
+            uint8 winningIndex,
+            uint256 winningVotes
+        ) = getWinningOptionIndexAndVotesByPollId(_pollId);
+
+        emit PollResult(
+            msg.sender,
+            _pollId,
+            winningIndex,
+            winningVotes,
+            getTotalVotesCastedByPollId(_pollId)
+        );
+    }
+
+    // Given pollid, checks whether poll has ended or not
+    function hasPollEnded(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (bool)
+    {
+        return polls[_pollId].endTimeStamp <= now;
     }
 }
