@@ -16,7 +16,6 @@ contract Polling {
         string title;
         uint256 startTimeStamp;
         uint256 endTimeStamp;
-        bool active;
         uint8 pollOptionCount;
         mapping(uint8 => PollOption) pollOptions;
         mapping(address => uint8) votes;
@@ -118,7 +117,6 @@ contract Polling {
     }
 
     modifier canAddPollOption(bytes32 _pollId) {
-        require(!polls[_pollId].active, "Poll is live, can't modify now !");
         require(
             polls[_pollId].pollOptionCount < maxPollOptionCount,
             "Reached max poll option count !"
@@ -129,6 +127,7 @@ contract Polling {
     function addPollOption(bytes32 _pollId, string memory _pollOption)
         public
         didYouCreatePoll(_pollId)
+        isPollAlreadyLive(_pollId)
         canAddPollOption(_pollId)
     {
         PollOption memory pollOption;
@@ -140,16 +139,20 @@ contract Polling {
         poll.pollOptionCount++;
     }
 
+    modifier isPollAlreadyLive(bytes32 _pollId) {
+        require(
+            polls[_pollId].startTimeStamp != 0 &&
+                polls[_pollId].endTimeStamp != 0,
+            "Poll already live !"
+        );
+        _;
+    }
+
     modifier areEnoughPollOptionsSet(bytes32 _pollId) {
         require(
             polls[_pollId].pollOptionCount >= 2,
             "Atleast 2 options required !"
         );
-        _;
-    }
-
-    modifier isPollAlreadyLive(bytes32 _pollId) {
-        require(!polls[_pollId].active, "Poll already live !");
         _;
     }
 
@@ -170,7 +173,6 @@ contract Polling {
     {
         polls[_pollId].startTimeStamp = now;
         polls[_pollId].endTimeStamp = now + (_activeForHours * 1 hours);
-        polls[_pollId].active = true;
     }
 
     modifier checkPollExistance(bytes32 _pollId) {
