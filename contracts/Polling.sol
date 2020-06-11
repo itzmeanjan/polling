@@ -140,6 +140,11 @@ contract Polling {
         poll.pollOptionCount++;
     }
 
+    modifier areEnoughPollOptionsSet(bytes32 _pollId) {
+        require(polls[_pollId].pollOptionCount >= 2, "");
+        _;
+    }
+
     modifier isPollAlreadyLive(bytes32 _pollId) {
         require(!polls[_pollId].active, "Poll already live !");
         _;
@@ -149,6 +154,7 @@ contract Polling {
         public
         didYouCreatePoll(_pollId)
         isPollAlreadyLive(_pollId)
+        areEnoughPollOptionsSet(_pollId)
     {
         polls[_pollId].active = true;
     }
