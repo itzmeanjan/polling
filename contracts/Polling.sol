@@ -218,7 +218,7 @@ contract Polling {
     }
 
     // Added check for poll activation
-    function isPollActive(bytes32 _pollId) private view returns (bool) {
+    function isPollActive(bytes32 _pollId) public view returns (bool) {
         return
             polls[_pollId].startTimeStamp <= now &&
             polls[_pollId].endTimeStamp > now;
@@ -282,7 +282,7 @@ contract Polling {
         return getAccountPollCountByAddress(msg.sender);
     }
 
-    // Returns unique pollid, given creator address & index of
+    // Returns unique pollId, given creator address & index of
     // poll ( >= 0 && < #-of all polls created by creator )
     function getPollIdByAddressAndIndex(address _addr, uint256 index)
         public
@@ -299,18 +299,28 @@ contract Polling {
     }
 
     // Given poll index ( < number of polls created by msg.sender ),
-    // it'll lookup pollid from my account
+    // it'll lookup pollId from my account
     function getMyPollIdByIndex(uint256 index) public view returns (bytes32) {
         return getPollIdByAddressAndIndex(msg.sender, index);
     }
 
-    // Given pollid, returns account which created this poll
-    function getCreatorAccountByPollId(bytes32 _pollId)
+    // Given pollId, returns account which created this poll
+    function getCreatorAddressByPollId(bytes32 _pollId)
         public
         view
         checkPollExistance(_pollId)
         returns (address)
     {
         return pollIdToUser[_pollId];
+    }
+
+    // Returns title of poll, by given pollId
+    function getTitleByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (string memory)
+    {
+        return polls[_pollId].title;
     }
 }
