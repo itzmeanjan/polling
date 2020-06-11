@@ -38,6 +38,13 @@ contract Polling {
 
     event UserCreated(string name, address identifier);
     event PollIsLive(string name, address identifier, bytes32 pollId);
+    event PollResult(
+        address identifier,
+        bytes32 pollId,
+        uint8 winningOptionIndex,
+        uint256 winningOptionVoteCount,
+        uint256 totalVotesCasted
+    );
 
     constructor() public {
         author = msg.sender;
@@ -392,5 +399,63 @@ contract Polling {
         );
 
         return polls[_pollId].pollOptions[index].voteCount;
+    }
+
+    // Given pollId, checks what's current status of poll i.e.
+    // which is winning option upto this point, returns index & vote count of winning option
+    //
+    // poll must be started before invoking this function, otherwise fails
+    function getWinningOptionIndexAndVotesByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (uint8, uint256)
+    {
+        require(
+            polls[_pollId].endTimeStamp != 0,
+            "Poll not even started yet !"
+        );
+
+        uint8 count = getPollOptionCountByPollId(_pollId);
+
+        uint8 maxVoteIndex = 0;
+        uint256 maxVoteCount = getPollOptionVoteCountByPollIdAndIndex(
+            _pollId,
+            maxVoteIndex
+        );
+
+        for (uint8 i = 1; i < count; i++) {
+            uint256 _tmp = getPollOptionVoteCountByPollIdAndIndex(_pollId, i);
+            if (_tmp > maxVoteCount) {
+                maxVoteIndex = i;
+                maxVoteCount = _tmp;
+            }
+        }
+
+        return (maxVoteIndex, maxVoteCount);
+    }
+
+    // Given pollId, and poll creator is invoking this function,
+    // it'll announce that poll has ended with result, where result is event emitted
+    //
+    // Make sure poll has ended, before invoking this function, otherwise it'll fail
+    function announcePollResult(bytes32 _pollId)
+        public
+        didYouCreatePoll(_pollId)
+    {
+        require(polls[_pollId].endTimeStamp <= now, "Poll not ended yet !");
+
+        (
+            uint8 winningIndex,
+            uint256 winningVotes
+        ) = getWinningOptionIndexAndVotesByPollId(_pollId);
+
+        emit PollResult(
+            msg.sender,
+            _pollId,
+            winningIndex,
+            winningVotes,
+            getTotalVotesCastedByPollId(_pollId)
+        );
     }
 }
