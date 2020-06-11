@@ -245,10 +245,20 @@ contract Polling {
         return recentPolls;
     }
 
-    // Returns account information of function invoker
-    function getMyAccount() public view returns (string memory, uint256) {
-        require(users[msg.sender].created, "Not found !");
+    // checks whether function invoker has account or not
+    // if yes, they are allowed to proceed further
+    modifier accountCreated() {
+        require(users[msg.sender].created, "Account not found !");
+        _;
+    }
 
-        return (users[msg.sender].name, users[msg.sender].pollCount);
+    // Returns invoker's account name ( i.e. account Owner name )
+    function getMyName() public view accountCreated returns (string memory) {
+        return users[msg.sender].name;
+    }
+
+    // Returns number of posts created by this account
+    function getMyPostCount() public view accountCreated returns (uint256) {
+        return users[msg.sender].pollCount;
     }
 }
