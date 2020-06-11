@@ -458,4 +458,14 @@ contract Polling {
             getTotalVotesCastedByPollId(_pollId)
         );
     }
+
+    // Given pollid, checks whether poll has ended or not
+    function hasPollEnded(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (bool)
+    {
+        return polls[_pollId].endTimeStamp <= now;
+    }
 }
