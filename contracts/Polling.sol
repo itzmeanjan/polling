@@ -323,4 +323,24 @@ contract Polling {
     {
         return polls[_pollId].title;
     }
+
+    // Get timestamp when poll was set active
+    function getStartTimeByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (uint256)
+    {
+        return polls[_pollId].startTimeStamp;
+    }
+
+    // Get timestamp when poll will go deactive
+    function getEndTimeByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (uint256)
+    {
+        return polls[_pollId].endTimeStamp;
+    }
 }
