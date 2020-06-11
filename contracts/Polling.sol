@@ -282,15 +282,26 @@ contract Polling {
         return getAccountPollCountByAddress(msg.sender);
     }
 
-    // Given poll index ( < number of polls created by msg.sender ),
-    // it'll lookup poll id
-    function getPollIdByIndex(uint256 index) public view returns (bytes32) {
+    // Returns unique pollid, given creator address & index of
+    // poll ( >= 0 && < #-of all polls created by creator )
+    function getPollIdByAddressAndIndex(address _addr, uint256 index)
+        public
+        view
+        accountCreated(_addr)
+        returns (bytes32)
+    {
         require(
-            index < users[msg.sender].pollCount,
+            index < users[_addr].pollCount,
             "Invalid index for looking up PollId !"
         );
 
-        return users[msg.sender].ids[index];
+        return users[_addr].ids[index];
+    }
+
+    // Given poll index ( < number of polls created by msg.sender ),
+    // it'll lookup pollid from my account
+    function getMyPollIdByIndex(uint256 index) public view returns (bytes32) {
+        return getPollIdByAddressAndIndex(msg.sender, index);
     }
 
     // Given pollid, returns account which created this poll
