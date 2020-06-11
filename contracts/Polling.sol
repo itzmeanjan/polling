@@ -36,7 +36,7 @@ contract Polling {
     bytes32[] pollIds;
 
     event UserCreated(string name, address identifier);
-    event PollCreated(string name, address identifier, bytes32 pollId);
+    event PollIsLive(string name, address identifier, bytes32 pollId);
 
     constructor() public {
         author = msg.sender;
@@ -106,8 +106,6 @@ contract Polling {
         pollIdToUser[pollId] = msg.sender;
         pollIds.push(pollId);
 
-        emit PollCreated(users[msg.sender].name, msg.sender, pollId);
-
         return pollId;
     }
 
@@ -173,6 +171,8 @@ contract Polling {
     {
         polls[_pollId].startTimeStamp = now;
         polls[_pollId].endTimeStamp = now + (_activeForHours * 1 hours);
+
+        emit PollIsLive(users[msg.sender].name, msg.sender, _pollId);
     }
 
     modifier checkPollExistance(bytes32 _pollId) {
