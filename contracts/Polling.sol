@@ -224,6 +224,7 @@ contract Polling {
             polls[_pollId].endTimeStamp > now;
     }
 
+    // Given number of recent active polls required, returns a list of them
     function getRecentXActivePolls(uint8 x)
         public
         view
@@ -242,5 +243,12 @@ contract Polling {
         }
 
         return recentPolls;
+    }
+
+    // Returns account information of function invoker
+    function getMyAccount() public view returns (string memory, uint256) {
+        require(users[msg.sender].created, "Not found !");
+
+        return (users[msg.sender].name, users[msg.sender].pollCount);
     }
 }
