@@ -234,7 +234,7 @@ contract Polling {
         bytes32[] memory recentPolls = new bytes32[](x);
         uint8 idx = 0;
 
-        for (uint256 i = pollIds.length - 1; i >= 0 && idx < x; i++) {
+        for (uint256 i = pollIds.length - 1; i >= 0 && idx < x; i--) {
             if (isPollActive(pollIds[i])) {
                 recentPolls[idx] = pollIds[i];
                 idx++;
