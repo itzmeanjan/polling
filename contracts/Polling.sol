@@ -112,8 +112,12 @@ contract Polling {
         return pollId;
     }
 
-    modifier canAddPollOption(bytes32 _pollId) {
+    modifier didYouCreatePoll(bytes32 _pollId) {
         require(pollIdToUser[_pollId] == msg.sender, "You're not allowed !");
+        _;
+    }
+
+    modifier canAddPollOption(bytes32 _pollId) {
         require(!polls[_pollId].active, "Poll is live, can't modify now !");
         require(
             polls[_pollId].pollOptionCount < maxPollOptionCount,
@@ -124,6 +128,7 @@ contract Polling {
 
     function addPollOption(bytes32 _pollId, string memory _pollOption)
         public
+        didYouCreatePoll(_pollId)
         canAddPollOption(_pollId)
     {
         PollOption memory pollOption;
