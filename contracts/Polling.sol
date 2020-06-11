@@ -140,6 +140,10 @@ contract Polling {
         poll.pollOptionCount++;
     }
 
+    function makePollLive(bytes32 _pollId) public didYouCreatePoll(_pollId) {
+        polls[_pollId].active = true;
+    }
+
     modifier checkPollExistance(bytes32 _pollId) {
         require(pollIdToUser[_pollId] != address(0), "Poll doesn't exist !");
         _;
