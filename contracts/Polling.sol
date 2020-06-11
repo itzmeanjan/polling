@@ -272,4 +272,14 @@ contract Polling {
 
         return users[msg.sender].ids[index];
     }
+
+    // Given pollid, returns account which created this poll
+    function getCreatorAccountByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (address)
+    {
+        return pollIdToUser[_pollId];
+    }
 }
