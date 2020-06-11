@@ -368,4 +368,17 @@ contract Polling {
 
         return polls[_pollId].pollOptions[index].content;
     }
+
+    // Given pollId & option index, returns votes casted on that option
+    function getPollOptionVoteCountByPollIdAndIndex(
+        bytes32 _pollId,
+        uint8 index
+    ) public view checkPollExistance(_pollId) returns (uint256) {
+        require(
+            index < polls[_pollId].pollOptionCount,
+            "Invalid index for looking up PollOption !"
+        );
+
+        return polls[_pollId].pollOptions[index].voteCount;
+    }
 }
