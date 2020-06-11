@@ -180,6 +180,15 @@ contract Polling {
         _;
     }
 
+    modifier isPollLive(bytes32 _pollId) {
+        require(
+            polls[_pollId].startTimeStamp <= now &&
+                polls[_pollId].endTimeStamp > now,
+            "Poll not live !"
+        );
+        _;
+    }
+
     modifier checkDuplicateVote(bytes32 _pollId) {
         require(
             polls[_pollId].votes[msg.sender] == 0,
@@ -199,6 +208,7 @@ contract Polling {
     function castVote(bytes32 _pollId, uint8 _option)
         public
         checkPollExistance(_pollId)
+        isPollLive(_pollId)
         checkDuplicateVote(_pollId)
         isValidOptionToCastVote(_pollId, _option)
     {
