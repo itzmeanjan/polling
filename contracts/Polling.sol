@@ -353,4 +353,19 @@ contract Polling {
     {
         return polls[_pollId].pollOptionCount;
     }
+
+    // Given pollId & option index, returns content of that option
+    function getPollOptionContentByPollIdAndIndex(bytes32 _pollId, uint8 index)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (string memory)
+    {
+        require(
+            index < polls[_pollId].pollOptionCount,
+            "Invalid index for looking up PollOption !"
+        );
+
+        return polls[_pollId].pollOptions[index].content;
+    }
 }
