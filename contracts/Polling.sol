@@ -343,4 +343,14 @@ contract Polling {
     {
         return polls[_pollId].endTimeStamp;
     }
+
+    // Given pollId, returns number of options present
+    function getPollOptionCountByPollId(bytes32 _pollId)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (uint8)
+    {
+        return polls[_pollId].pollOptionCount;
+    }
 }
