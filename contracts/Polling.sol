@@ -257,8 +257,19 @@ contract Polling {
         return users[msg.sender].name;
     }
 
-    // Returns number of posts created by this account
-    function getMyPostCount() public view accountCreated returns (uint256) {
+    // Returns number of poll created by this account
+    function getMyPollCount() public view accountCreated returns (uint256) {
         return users[msg.sender].pollCount;
+    }
+
+    // Given poll index ( < number of polls created by msg.sender ),
+    // it'll lookup poll id
+    function getPollIdByIndex(uint256 index) public view returns (bytes32) {
+        require(
+            index < users[msg.sender].pollCount,
+            "Invalid index for looking up PollId !"
+        );
+
+        return users[msg.sender].ids[index];
     }
 }
