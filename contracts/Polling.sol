@@ -15,6 +15,7 @@ contract Polling {
         address creator;
         string title;
         uint256 timeStamp;
+        bool active;
         uint8 pollOptionCount;
         mapping(uint8 => PollOption) pollOptions;
         mapping(address => uint8) votes;
@@ -113,6 +114,7 @@ contract Polling {
 
     modifier canAddPollOption(bytes32 _pollId) {
         require(pollIdToUser[_pollId] == msg.sender, "You're not allowed !");
+        require(!polls[_pollId].active, "Poll is live, can't modify now !");
         require(
             polls[_pollId].pollOptionCount < maxPollOptionCount,
             "Reached max poll option count !"
