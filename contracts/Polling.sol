@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.6;
 
-
 contract Polling {
     address payable public author;
     uint8 maxPollOptionCount;
@@ -373,6 +372,33 @@ contract Polling {
         return polls[_pollId].pollOptionCount;
     }
 
+    // checks whether address has voted in specified poll ( by pollId ) or not
+    modifier votedYet(bytes32 _pollId, address _addr) {
+        require(polls[_pollId].votes[_addr] != 0, "Not voted yet !");
+        _;
+    }
+
+    // Given target pollId & voter's unique address, it'll lookup
+    // pollOptionIndex ( >=0 && < #-of-options ) choice made by voter
+    //
+    // If voter hasn't yet participated in this poll, it'll fail
+    function getVoteByPollIdAndAddress(bytes32 _pollId, address _addr)
+        public
+        view
+        checkPollExistance(_pollId)
+        isPollAlreadyLive(_pollId)
+        votedYet(_pollId, _addr)
+        returns (uint8)
+    {
+        return polls[_pollId].votes[_addr] - 1;
+    }
+
+    // Looks up vote choice made by function invoker in specified poll,
+    // given that user has already voted or fails
+    function getMyVoteByPollId(bytes32 _pollId) public view returns (uint8) {
+        return getVoteByPollIdAndAddress(_pollId, msg.sender);
+    }
+
     // Given pollId & option index, returns content of that option
     function getPollOptionContentByPollIdAndIndex(bytes32 _pollId, uint8 index)
         public
@@ -409,13 +435,10 @@ contract Polling {
         public
         view
         checkPollExistance(_pollId)
+        isPollAlreadyLive(_pollId)
+        votedYet(_pollId, msg.sender)
         returns (uint8, uint256)
     {
-        require(
-            polls[_pollId].endTimeStamp != 0,
-            "Poll not even started yet !"
-        );
-
         uint8 count = getPollOptionCountByPollId(_pollId);
 
         uint8 maxVoteIndex = 0;
