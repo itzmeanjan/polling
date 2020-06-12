@@ -386,6 +386,7 @@ contract Polling {
         public
         view
         checkPollExistance(_pollId)
+        isPollAlreadyLive(_pollId)
         votedYet(_pollId, _addr)
         returns (uint8)
     {
@@ -434,13 +435,10 @@ contract Polling {
         public
         view
         checkPollExistance(_pollId)
+        isPollAlreadyLive(_pollId)
+        votedYet(_pollId, msg.sender)
         returns (uint8, uint256)
     {
-        require(
-            polls[_pollId].endTimeStamp != 0,
-            "Poll not even started yet !"
-        );
-
         uint8 count = getPollOptionCountByPollId(_pollId);
 
         uint8 maxVoteIndex = 0;
