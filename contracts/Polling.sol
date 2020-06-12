@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.6;
 
-
 contract Polling {
     address payable public author;
     uint8 maxPollOptionCount;
@@ -371,6 +370,21 @@ contract Polling {
         returns (uint8)
     {
         return polls[_pollId].pollOptionCount;
+    }
+
+    // Given target pollId & voter's unique address, it'll lookup
+    // pollOptionIndex ( >=0 && < #-of-options ) choice made by voter
+    //
+    // If voter hasn't yet participated in this poll, it'll throw error
+    function getVoteByPollIdAndAddress(bytes32 _pollId, address _addr)
+        public
+        view
+        checkPollExistance(_pollId)
+        returns (uint8)
+    {
+        require(polls[_pollId].votes[_addr] != 0, "Not voted yet !");
+
+        return polls[_pollId].votes[_addr] - 1;
     }
 
     // Given pollId & option index, returns content of that option
