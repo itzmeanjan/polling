@@ -372,19 +372,30 @@ contract Polling {
         return polls[_pollId].pollOptionCount;
     }
 
+    // checks whether address has voted in specified poll ( by pollId ) or not
+    modifier votedYet(bytes32 _pollId, address _addr) {
+        require(polls[_pollId].votes[_addr] != 0, "Not voted yet !");
+        _;
+    }
+
     // Given target pollId & voter's unique address, it'll lookup
     // pollOptionIndex ( >=0 && < #-of-options ) choice made by voter
     //
-    // If voter hasn't yet participated in this poll, it'll throw error
+    // If voter hasn't yet participated in this poll, it'll fail
     function getVoteByPollIdAndAddress(bytes32 _pollId, address _addr)
         public
         view
         checkPollExistance(_pollId)
+        votedYet(_pollId, _addr)
         returns (uint8)
     {
-        require(polls[_pollId].votes[_addr] != 0, "Not voted yet !");
-
         return polls[_pollId].votes[_addr] - 1;
+    }
+
+    // Looks up vote choice made by function invoker in specified poll,
+    // given that user has already voted or fails
+    function getMyVoteByPollId(bytes32 _pollId) public view returns (uint8) {
+        return getVoteByPollIdAndAddress(_pollId, msg.sender);
     }
 
     // Given pollId & option index, returns content of that option
