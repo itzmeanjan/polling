@@ -18,11 +18,13 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 // const infuraKey = "fj4jll3k.....";
 //
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
+
+const fs = require('fs');
+// reading content from secret seed phrase holder file
+const mnemonic = fs.readFileSync('./.secret').toString().trim();
 
 module.exports = {
   /**
@@ -35,7 +37,7 @@ module.exports = {
    * $ truffle test --network <network-name>
    */
 
-  contracts_build_directory: "./output",
+  contracts_build_directory: "./dapp/contracts",
 
   networks: {
     // Useful for testing. The `development` name is special - truffle uses it by default
@@ -49,6 +51,11 @@ module.exports = {
       port: 8545,            // Standard Ethereum port (default: none)
       network_id: "*",       // Any network (default: none)
     },
+
+    ganache_local: {
+      provider: () => new HDWalletProvider(mnemonic, 'http://127.0.0.1:7545', 0, 1, true, "m/44'/60'/0'/0/"),
+      network_id: 5777
+    }
 
     // Another network with more advanced options...
     // advanced: {
