@@ -1,26 +1,34 @@
 import React from 'react';
-import logo from './logo.svg';
+import getMetaMask from './getMetaMask.js';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+class DApp extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { web3: undefined, status: 'Checking compatibility ...' };
+  }
+
+  componentDidMount() {
+    getMetaMask().then((v) => {
+      this.setState({
+        web3: v,
+        status: 'Welcome to Polling :)'
+      });
+    }, (reason) => {
+      this.setState({
+        status: 'Incompatible browser !'
+      });
+    });
+  }
+
+  render() {
+    return (
+      <div className="dApp">
+        <h2 className="status">{this.state.status}</h2>
+      </div>
+    );
+  }
 }
 
-export default App;
+export default DApp;
