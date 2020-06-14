@@ -28,7 +28,7 @@ class DApp extends React.Component {
       return (<Redirect to="/polling" />);
     }
 
-    setTimeout(() => { 
+    setTimeout(() => {
       this.setState((state) => {
         return {
           ...state,
