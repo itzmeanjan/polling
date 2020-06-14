@@ -1,3 +1,5 @@
+// this class will manage all communication to smart contract
+// via web3 bridge
 class Bridge {
 
     constructor(web3, accounts, contract) {
