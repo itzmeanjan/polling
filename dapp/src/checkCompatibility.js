@@ -1,6 +1,9 @@
 import Web3 from 'web3';
 
-const getMetaMask = () => new Promise((resolve, reject) => {
+// checks whether it's a modern dapp browser or not
+// if yes, resolves by returning instance to web3 object
+// which can be used for further interaction with blockchain
+const checkCompatibility = () => new Promise((resolve, reject) => {
     window.addEventListener('load', async () => {
         if (window.ethereum) {
             let web3Provider = new Web3(window.ethereum);
@@ -16,5 +19,4 @@ const getMetaMask = () => new Promise((resolve, reject) => {
     });
 });
 
-
-export default getMetaMask;
+export default checkCompatibility;

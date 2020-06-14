@@ -1,12 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Router, Route } from 'react-router-dom';
 import './index.css';
-import DApp from './App';
+import routes from './routes.js';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <DApp />
+    <Router>
+      {
+        routes.map((v) => (
+          <Route
+            key={v.path}
+            path={v.path}
+            component={v.component}
+          />
+        ))
+      }
+    </Router>
   </React.StrictMode>,
   document.getElementById('root')
 );

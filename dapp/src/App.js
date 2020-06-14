@@ -1,21 +1,24 @@
 import React from 'react';
-import getMetaMask from './getMetaMask.js';
+import { Redirect } from 'react-router-dom';
+import checkCompatibility from './checkCompatibility.js';
 import './App.css';
+import { Redirect } from 'react-router-dom/cjs/react-router-dom.min';
 
 
 class DApp extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { web3: undefined, status: 'Checking compatibility ...' };
+    this.state = { web3: undefined, status: 'Checking compatibility ...', redirect: false };
   }
 
   componentDidMount() {
-    getMetaMask().then((v) => {
+    checkCompatibility().then((v) => {
       this.setState({
         web3: v,
-        status: 'Welcome to Polling :)'
+        status: 'Welcome to Polling :)',
+        redirect: true
       });
-    }, (reason) => {
+    }, (r) => {
       this.setState({
         status: 'Incompatible browser !'
       });
@@ -23,6 +26,10 @@ class DApp extends React.Component {
   }
 
   render() {
+    if (this.state.redirect) {
+      return <Redirect to="/polling" />
+    }
+
     return (
       <div className="dApp">
         <h2 className="status">{this.state.status}</h2>
