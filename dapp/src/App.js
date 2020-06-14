@@ -2,7 +2,6 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import checkCompatibility from './checkCompatibility.js';
 import './App.css';
-import { Redirect } from 'react-router-dom/cjs/react-router-dom.min';
 
 
 class DApp extends React.Component {
@@ -15,8 +14,7 @@ class DApp extends React.Component {
     checkCompatibility().then((v) => {
       this.setState({
         web3: v,
-        status: 'Welcome to Polling :)',
-        redirect: true
+        status: 'Welcome to Polling :)'
       });
     }, (r) => {
       this.setState({
@@ -27,8 +25,17 @@ class DApp extends React.Component {
 
   render() {
     if (this.state.redirect) {
-      return <Redirect to="/polling" />
+      return (<Redirect to="/polling" />);
     }
+
+    setTimeout(() => { 
+      this.setState((state) => {
+        return {
+          ...state,
+          redirect: true
+        };
+      })
+    }, 1500);
 
     return (
       <div className="dApp">
