@@ -53,6 +53,21 @@ class Bridge {
 
     });
 
+    // given pollId and pollActiveTime ( in hours ), we'll try to 
+    // make poll live, if all conditions get satisfied, it'll
+    // make this poll ready to accept vote from users 
+    makePollLive = (pollId, activeForHours) => new Promise((resolve, reject) => {
+        if (!(activeForHours > 0 && activeForHours <= 72)) {
+            reject('Poll needs to be active for { > 0 && <= 72 } hours');
+        }
+
+        this.contract.methods.makePollLive(pollId, activeForHours)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
