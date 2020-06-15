@@ -127,6 +127,9 @@ class Bridge {
 
     });
 
+    // returns #-of polls created by `this.account` ( i.e. checking self account )
+    getMyPollCount = () => this.getAccountPollCountByAddress(this.account);
+
 }
 
 export default Bridge;
