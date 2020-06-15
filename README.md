@@ -12,6 +12,7 @@ What **polling** aims to attain is nothing but, create a very transparent, immut
 - Started writing smart contracts for controlling whole polling ops on **[09/06/2020]**
 - Completed primary features of smart contract on **[12/06/2020]**
 - Going to frontend work on **[12/06/2020]**
+- Completed implementing JavaScript API for interacting with smart contract **[15/06/2020]**
 
 _**More coming soon ...**_
 
