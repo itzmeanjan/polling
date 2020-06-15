@@ -194,6 +194,28 @@ class Bridge {
 
     });
 
+    // given pollId, returns number of options available in poll
+    getPollOptionCountByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getPollOptionCountByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+    });
+
+    // Given pollId & address of voter, it'll look up which option has this voter voted for
+    getVoteByPollIdAndAddress = (pollId, address) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getVoteByPollIdAndAddress(pollId, address)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // Given pollId, returns choice made by `this.accout`
+    getMyVoteByPollId = () => this.getVoteByPollIdAndAddress(pollId, this.account);
+
 }
 
 export default Bridge;

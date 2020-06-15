@@ -387,7 +387,7 @@ contract Polling {
         view
         checkPollExistance(_pollId)
         isPollAlreadyLive(_pollId)
-        votedYet(_pollId, _addr)
+        votedYet(_pollId, msg.sender)
         returns (uint8)
     {
         return polls[_pollId].votes[_addr] - 1;
