@@ -184,6 +184,16 @@ class Bridge {
 
     });
 
+    // Given pollId, returns total votes casted
+    getTotalVotesCastedByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getTotalVotesCastedByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
