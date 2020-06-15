@@ -1,8 +1,4 @@
-// this class will manage all communication to smart contract
-
-import { hexToUtf8 } from "web3-utils";
-
-// via web3 bridge
+// Bridging communication gap between blockchain & app front-end
 class Bridge {
 
     constructor(web3, account, contract) {
@@ -32,6 +28,16 @@ class Bridge {
     createUser(name) {
         return new Promise((resolve, reject) => {
             this.contract.methods.createUser(name)
+                .send({ from: this.account })
+                .on('receipt', (_receipt) => { resolve(_receipt); })
+                .on('error', (_error) => { reject(_error); });
+        });
+    }
+
+    // creates poll with given topic, from invoker's account
+    createPoll(title) {
+        return new Promise((resolve, reject) => {
+            this.contract.methods.createPoll(title)
                 .send({ from: this.account })
                 .on('receipt', (_receipt) => { resolve(_receipt); })
                 .on('error', (_error) => { reject(_error); });
