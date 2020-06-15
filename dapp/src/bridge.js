@@ -144,6 +144,16 @@ class Bridge {
     // same as previous one, but specialized case i.e. returns info for function invoker's account
     getMyPollIdByIndex = (index) => this.getPollIdByAddressAndIndex(this.account, index);
 
+    // returns poll creator's address, given pollId ( which is also one unique identifier )
+    getCreatorAddressByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getCreatorAddressByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
