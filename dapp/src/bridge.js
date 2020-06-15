@@ -154,6 +154,16 @@ class Bridge {
 
     });
 
+    // given pollId, returns poll's title
+    getTitleByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getTitleByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
