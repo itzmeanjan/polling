@@ -141,6 +141,9 @@ class Bridge {
 
     });
 
+    // same as previous one, but specialized case i.e. returns info for function invoker's account
+    getMyPollIdByIndex = (index) => this.getPollIdByAddressAndIndex(this.account, index);
+
 }
 
 export default Bridge;
