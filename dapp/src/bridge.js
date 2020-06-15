@@ -68,6 +68,17 @@ class Bridge {
 
     });
 
+    // casts vote on selected option ( must be available for this pollId )
+    // where poll gets uniquely determined, by supplied id param
+    castVote = (pollId, option) => new Promise((resolve, reject) => {
+
+        this.contract.methods.castVote(pollId, option)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
