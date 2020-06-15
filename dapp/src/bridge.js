@@ -130,6 +130,17 @@ class Bridge {
     // returns #-of polls created by `this.account` ( i.e. checking self account )
     getMyPollCount = () => this.getAccountPollCountByAddress(this.account);
 
+    // returns pollId ( uniquely indentifies a poll ), given creator's address
+    //  & index of poll in his/ her account ( >=0  && < total #-of polls created )
+    getPollIdByAddressAndIndex = (address, index) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getPollIdByAddressAndIndex(address, index)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
