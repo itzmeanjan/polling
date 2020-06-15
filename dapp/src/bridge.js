@@ -23,12 +23,18 @@ class Bridge {
 
             this.contract.methods.setMaxPollOptionCount(count)
                 .send({ from: this.account })
-                .on('receipt', (_receipt) => {
-                    resolve(_receipt);
-                })
-                .on('error', (_error) => {
-                    reject(_error);
-                });
+                .on('receipt', (_receipt) => { resolve(_receipt); })
+                .on('error', (_error) => { reject(_error); });
+        });
+    }
+
+    // creates user account in dApp, given name of account holder
+    createUser(name) {
+        return new Promise((resolve, reject) => {
+            this.contract.methods.createUser(name)
+                .send({ from: this.account })
+                .on('receipt', (_receipt) => { resolve(_receipt); })
+                .on('error', (_error) => { reject(_error); });
         });
     }
 
