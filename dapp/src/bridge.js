@@ -79,6 +79,16 @@ class Bridge {
 
     });
 
+    // given pollId, checks whether this poll is active or not
+    isPollActive = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.isPollActive(pollId)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
