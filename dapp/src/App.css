@@ -16,8 +16,26 @@
   animation-direction: alternate;
 }
 
+
 @keyframes disappearing-text {
   0% {color: #ffffff;}
   50% {color: #777777;}
   100% {color: #223322;}
+}
+
+.dApp > .error {
+  color: #ff7711;
+  font-size: medium;
+  font-family: 'Courier New', Courier, monospace;
+  animation-name: disappearing-error;
+  animation-iteration-count: infinite;
+  animation-duration: .5s;
+  animation-direction: alternate;
+}
+
+
+@keyframes disappearing-error {
+  0% {color: #110000;}
+  50% {color: #880000; }
+  100% {color: #ff0000; font-size: 20px; font-weight: 700;}
 }

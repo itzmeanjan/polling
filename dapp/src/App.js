@@ -4,13 +4,19 @@ import Polling from './contracts/Polling.json';
 import Bridge from './bridge.js';
 import './App.css';
 
-
+// main component, gets rendered first, after checking
+// browser compatibility, tries to create bridge for talking to 
+// blockchain
 class DApp extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { bridge: null, status: 'Checking compatibility ...' };
+    this.state = { bridge: null, status: 'Checking compatibility ...', error: null };
   }
 
+  // as soon as render is called for very first time, this method
+  // to be called, where we'll check browser compatibility,
+  // access accounts, and obtains network id of currently connected network,
+  // then creates bridge for talking to blockchain ( i.e. smart contract methods )
   async componentDidMount() {
     try {
       const web3 = await checkCompatibility();
@@ -23,27 +29,36 @@ class DApp extends React.Component {
       );
 
       this.setState({
-        bridge: new Bridge(web3, accounts, contract)
+        bridge: new Bridge(web3, accounts[0], contract),
+        status: 'Welcome to Polling :)'
       });
     } catch (error) {
-      this.setState({ status: 'Incompatible browser !' });
+      this.setState({ error: 'Incompatible browser !' });
     }
   }
 
   render() {
-    if (this.state.bridge) {
-      return (<div class="dApp">
-        <h1 className="status">
-          Obtained ...
-        </h1>
+    if (this.state.error) {
+      return (<div className="dApp">
+        <h2 className="error">
+          {this.state.error}
+        </h2>
       </div>);
-    }
+    } else {
+      if (this.state.bridge) {
+        return (<div className="dApp">
+          <h2 className="status">
+            {this.state.status}
+          </h2>
+        </div>);
+      }
 
-    return (
-      <div className="dApp">
-        <h2 className="status">{this.state.status}</h2>
-      </div>
-    );
+      return (
+        <div className="dApp">
+          <h2 className="status">{this.state.status}</h2>
+        </div>
+      );
+    }
   }
 }
 

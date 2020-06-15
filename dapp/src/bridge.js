@@ -1,10 +1,63 @@
+// Bridging communication gap between blockchain & app front-end
 class Bridge {
 
-    constructor(web3, accounts, contract) {
+    constructor(web3, account, contract) {
         this.web3 = web3;
-        this.accounts = accounts;
+        this.account = account;
         this.contract = contract;
     }
+
+    // Given a count for setting max poll options for a certain poll, 
+    // it'll call contract method for setting max poll option;
+    // 
+    // poll count needs to be >=2 && <=16
+    setMaxPollOptionCount(count) {
+        return new Promise((resolve, reject) => {
+            if (!(count >= 2 && count <= 16)) {
+                reject('count must be >=2 && <=16');
+            }
+
+            this.contract.methods.setMaxPollOptionCount(count)
+                .send({ from: this.account })
+                .on('receipt', (_receipt) => { resolve(_receipt); })
+                .on('error', (_error) => { reject(_error); });
+        });
+    }
+
+    // creates user account in dApp, given name of account holder
+    createUser(name) {
+        return new Promise((resolve, reject) => {
+
+            this.contract.methods.createUser(name)
+                .send({ from: this.account })
+                .on('receipt', (_receipt) => { resolve(_receipt); })
+                .on('error', (_error) => { reject(_error); });
+
+        });
+    }
+
+    // creates poll with given topic, from invoker's account
+    createPoll(title) {
+        return new Promise((resolve, reject) => {
+
+            this.contract.methods.createPoll(title)
+                .send({ from: this.account })
+                .on('receipt', (_receipt) => { resolve(_receipt); })
+                .on('error', (_error) => { reject(_error); });
+
+        });
+    }
+
+    // given unique identifier for poll, adds poll option i.e. 
+    // option on which participants are going to cast their vote
+    addPollOption = (pollId, pollOption) => new Promise((resolve, reject) => {
+
+        this.contract.methods.addPollOption(pollId, pollOption)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
+
+    });
 
 }
 
