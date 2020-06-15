@@ -174,6 +174,16 @@ class Bridge {
 
     });
 
+    // given pollid, returns end time of poll i.e. when poll stops(/stopped) accepting vote
+    getEndTimeByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getEndTimeByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
