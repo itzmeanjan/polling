@@ -113,6 +113,10 @@ class Bridge {
 
     });
 
+    // returns current user's account name, 
+    // simply using aforedefined function
+    getMyAccountName = () => this.getAccountNameByAddress(this.account);
+
 }
 
 export default Bridge;
