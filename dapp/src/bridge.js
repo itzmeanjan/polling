@@ -83,9 +83,114 @@ class Bridge {
     isPollActive = (pollId) => new Promise((resolve, reject) => {
 
         this.contract.methods.isPollActive(pollId)
-            .send({ from: this.account })
-            .on('receipt', (_receipt) => { resolve(_receipt); })
-            .on('error', (_error) => { reject(_error); });
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // given X ( > 0 ), returns a list of X recent pollIds ( polls created on dApp )
+    getRecentXActivePolls = (x) => new Promise((resolve, reject) => {
+        if (!(x > 0)) {
+            reject('X needs to be >0');
+        }
+
+        this.contract.methods.getRecentXActivePolls(x)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // returns account owner name ( set by owner while registering in dApp )
+    // given his/ his ethereum address ( from which account was opned )
+    getAccountNameByAddress = (address) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getAccountNameByAddress(address)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // returns current user's account name, 
+    // simply using aforedefined function
+    getMyAccountName = () => this.getAccountNameByAddress(this.account);
+
+    // returns #-of polls created by this account ( address of account supplied )
+    getAccountPollCountByAddress = (address) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getAccountPollCountByAddress(address)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // returns #-of polls created by `this.account` ( i.e. checking self account )
+    getMyPollCount = () => this.getAccountPollCountByAddress(this.account);
+
+    // returns pollId ( uniquely indentifies a poll ), given creator's address
+    //  & index of poll in his/ her account ( >=0  && < total #-of polls created )
+    getPollIdByAddressAndIndex = (address, index) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getPollIdByAddressAndIndex(address, index)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // same as previous one, but specialized case i.e. returns info for function invoker's account
+    getMyPollIdByIndex = (index) => this.getPollIdByAddressAndIndex(this.account, index);
+
+    // returns poll creator's address, given pollId ( which is also one unique identifier )
+    getCreatorAddressByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getCreatorAddressByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // given pollId, returns poll's title
+    getTitleByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getTitleByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // given pollid, returns start time of poll i.e. when poll went live
+    getStartTimeByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getStartTimeByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // given pollid, returns end time of poll i.e. when poll stops(/stopped) accepting vote
+    getEndTimeByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getEndTimeByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // Given pollId, returns total votes casted
+    getTotalVotesCastedByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getTotalVotesCastedByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
 
     });
 
