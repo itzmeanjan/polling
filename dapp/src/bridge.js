@@ -102,6 +102,17 @@ class Bridge {
 
     });
 
+    // returns account owner name ( set by owner while registering in dApp )
+    // given his/ his ethereum address ( from which account was opned )
+    getAccountNameByAddress = (address) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getAccountNameByAddress(address)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
