@@ -11,48 +11,78 @@ class Bridge {
     // it'll call contract method for setting max poll option;
     // 
     // poll count needs to be >=2 && <=16
-    setMaxPollOptionCount(count) {
-        return new Promise((resolve, reject) => {
-            if (!(count >= 2 && count <= 16)) {
-                reject('count must be >=2 && <=16');
-            }
+    setMaxPollOptionCount = (count) => new Promise((resolve, reject) => {
+        if (!(count >= 2 && count <= 16)) {
+            reject('count must be >=2 && <=16');
+        }
 
-            this.contract.methods.setMaxPollOptionCount(count)
-                .send({ from: this.account })
-                .on('receipt', (_receipt) => { resolve(_receipt); })
-                .on('error', (_error) => { reject(_error); });
-        });
-    }
+        this.contract.methods.setMaxPollOptionCount(count)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
+    });
 
     // creates user account in dApp, given name of account holder
-    createUser(name) {
-        return new Promise((resolve, reject) => {
+    createUser = (name) => new Promise((resolve, reject) => {
 
-            this.contract.methods.createUser(name)
-                .send({ from: this.account })
-                .on('receipt', (_receipt) => { resolve(_receipt); })
-                .on('error', (_error) => { reject(_error); });
+        this.contract.methods.createUser(name)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
 
-        });
-    }
+    });
 
     // creates poll with given topic, from invoker's account
-    createPoll(title) {
-        return new Promise((resolve, reject) => {
+    createPoll = (title) => new Promise((resolve, reject) => {
 
-            this.contract.methods.createPoll(title)
-                .send({ from: this.account })
-                .on('receipt', (_receipt) => { resolve(_receipt); })
-                .on('error', (_error) => { reject(_error); });
+        this.contract.methods.createPoll(title)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
 
-        });
-    }
+    });
 
     // given unique identifier for poll, adds poll option i.e. 
     // option on which participants are going to cast their vote
     addPollOption = (pollId, pollOption) => new Promise((resolve, reject) => {
 
         this.contract.methods.addPollOption(pollId, pollOption)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
+
+    });
+
+    // given pollId and pollActiveTime ( in hours ), we'll try to 
+    // make poll live, if all conditions get satisfied, it'll
+    // make this poll ready to accept vote from users 
+    makePollLive = (pollId, activeForHours) => new Promise((resolve, reject) => {
+        if (!(activeForHours > 0 && activeForHours <= 72)) {
+            reject('Poll needs to be active for { > 0 && <= 72 } hours');
+        }
+
+        this.contract.methods.makePollLive(pollId, activeForHours)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
+
+    });
+
+    // casts vote on selected option ( must be available for this pollId )
+    // where poll gets uniquely determined, by supplied id param
+    castVote = (pollId, option) => new Promise((resolve, reject) => {
+
+        this.contract.methods.castVote(pollId, option)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
+
+    });
+
+    // given pollId, checks whether this poll is active or not
+    isPollActive = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.isPollActive(pollId)
             .send({ from: this.account })
             .on('receipt', (_receipt) => { resolve(_receipt); })
             .on('error', (_error) => { reject(_error); });
