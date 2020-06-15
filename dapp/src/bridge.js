@@ -117,6 +117,16 @@ class Bridge {
     // simply using aforedefined function
     getMyAccountName = () => this.getAccountNameByAddress(this.account);
 
+    // returns #-of polls created by this account ( address of account supplied )
+    getAccountPollCountByAddress = (address) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getAccountPollCountByAddress(address)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
