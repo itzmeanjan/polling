@@ -29,7 +29,7 @@ class DApp extends React.Component {
       );
 
       this.setState({
-        bridge: new Bridge(web3, accounts, contract),
+        bridge: new Bridge(web3, accounts[0], contract),
         status: 'Welcome to Polling :)'
       });
     } catch (error) {
@@ -39,14 +39,14 @@ class DApp extends React.Component {
 
   render() {
     if (this.state.error) {
-      return (<div class="dApp">
+      return (<div className="dApp">
         <h2 className="error">
           {this.state.error}
         </h2>
       </div>);
     } else {
       if (this.state.bridge) {
-        return (<div class="dApp">
+        return (<div className="dApp">
           <h2 className="status">
             {this.state.status}
           </h2>
