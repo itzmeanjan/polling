@@ -27,22 +27,37 @@ class Bridge {
     // creates user account in dApp, given name of account holder
     createUser(name) {
         return new Promise((resolve, reject) => {
+
             this.contract.methods.createUser(name)
                 .send({ from: this.account })
                 .on('receipt', (_receipt) => { resolve(_receipt); })
                 .on('error', (_error) => { reject(_error); });
+
         });
     }
 
     // creates poll with given topic, from invoker's account
     createPoll(title) {
         return new Promise((resolve, reject) => {
+
             this.contract.methods.createPoll(title)
                 .send({ from: this.account })
                 .on('receipt', (_receipt) => { resolve(_receipt); })
                 .on('error', (_error) => { reject(_error); });
+
         });
     }
+
+    // given unique identifier for poll, adds poll option i.e. 
+    // option on which participants are going to cast their vote
+    addPollOption = (pollId, pollOption) => new Promise((resolve, reject) => {
+
+        this.contract.methods.addPollOption(pollId, pollOption)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
+
+    });
 
 }
 
