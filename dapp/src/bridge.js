@@ -213,6 +213,9 @@ class Bridge {
 
     });
 
+    // Given pollId, returns choice made by `this.accout`
+    getMyVoteByPollId = () => this.getVoteByPollIdAndAddress(pollId, this.account);
+
 }
 
 export default Bridge;
