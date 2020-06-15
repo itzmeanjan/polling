@@ -164,6 +164,16 @@ class Bridge {
 
     });
 
+    // given pollid, returns start time of poll i.e. when poll went live
+    getStartTimeByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getStartTimeByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
