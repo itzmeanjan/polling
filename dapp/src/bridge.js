@@ -83,9 +83,22 @@ class Bridge {
     isPollActive = (pollId) => new Promise((resolve, reject) => {
 
         this.contract.methods.isPollActive(pollId)
-            .send({ from: this.account })
-            .on('receipt', (_receipt) => { resolve(_receipt); })
-            .on('error', (_error) => { reject(_error); });
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // given X ( > 0 ), returns a list of X recent pollIds ( polls created on dApp )
+    getRecentXActivePolls = (x) => new Promise((resolve, reject) => {
+        if (!(x > 0)) {
+            reject('X needs to be >0');
+        }
+
+        this.contract.methods.getRecentXActivePolls(x)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
 
     });
 
