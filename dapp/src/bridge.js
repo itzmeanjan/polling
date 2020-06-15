@@ -203,6 +203,16 @@ class Bridge {
                 (_error) => { reject(_error); });
     });
 
+    // Given pollId & address of voter, it'll look up which option has this voter voted for
+    getVoteByPollIdAndAddress = (pollId, address) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getVoteByPollIdAndAddress(pollId, address)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
