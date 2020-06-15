@@ -194,6 +194,15 @@ class Bridge {
 
     });
 
+    // given pollId, returns number of options available in poll
+    getPollOptionCountByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getPollOptionCountByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+    });
+
 }
 
 export default Bridge;
