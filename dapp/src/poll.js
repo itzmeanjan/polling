@@ -72,6 +72,12 @@ class Poll {
         return { index: winningIndex, voteCount: winningVoteCount };
     }
 
+    // checks whether poll has ended or not
+    // by comparing current timestamp with endTimeStamp of poll
+    hasPollEnded = () => {
+        return Math.ceil(Date.now() / 1000) >= this.endTimeStamp;
+    }
+
 }
 
 export default Poll;
