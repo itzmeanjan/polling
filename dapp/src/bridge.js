@@ -266,6 +266,20 @@ class Bridge {
 
     });
 
+    // given pollId, tries to declare result of this poll,
+    // 
+    // poll creator must be calling this methods, otherwise it'll fail
+    // poll must have ended
+    // emits event, that can be listened to from front end
+    announcePollResult = (pollId) => {
+
+        this.contract.methods.announcePollResult(pollId)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
+
+    }
+
 }
 
 export default Bridge;
