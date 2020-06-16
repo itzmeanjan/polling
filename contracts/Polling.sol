@@ -71,6 +71,11 @@ contract Polling {
         maxPollOptionCount = count;
     }
 
+    // returns maximum poll option count, allowed to be set as of now
+    function getMaxPollOptionCount() public view returns (uint8) {
+        return maxPollOptionCount;
+    }
+
     modifier canCreateAccount() {
         require(!users[msg.sender].created, "User already exists !");
         _;
