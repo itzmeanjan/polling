@@ -240,6 +240,22 @@ class Bridge {
 
     });
 
+    // given pollId ( globally uniquely identifies a poll ), returns status of poll as of now
+    // i.e. which option is having max vote & vote count it has
+    //
+    // this computation may be slow, due to that fact that it needs to traverse all options
+    // to determine which one is having max vote
+    //
+    // also this call will successfully go through, if and only if caller has already participated in this poll
+    getWinningOptionIndexAndVotesByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getWinningOptionIndexAndVotesByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
