@@ -1,3 +1,5 @@
+// Poll class, for holding related info regarding a poll
+// each poll can be uniquely be identified using pollId
 class Poll {
 
     constructor(creator, title, startTimeStamp, endTimeStamp, totalVotesCasted) {
@@ -36,6 +38,11 @@ class Poll {
     // returns total votes casted
     get totalVotesCasted() {
         return this._totalVotesCasted;
+    }
+
+    // returns number of poll options available for this poll
+    get pollOptionCount() {
+        return this.pollOptions.length;
     }
 
     // adds poll option to this poll
