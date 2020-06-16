@@ -13,22 +13,27 @@ class Poll {
 
     }
 
+    // returns address of creator of this poll
     get creator() {
         return this._creator;
     }
 
+    // returns title of this post
     get title() {
         return this._title;
     }
 
+    // returns start time stamp of this poll
     get startTimeStamp() {
         return this._startTimeStamp;
     }
 
+    // returns end time stamp of poll
     get endTimeStamp() {
         return this._endTimeStamp;
     }
 
+    // returns total votes casted
     get totalVotesCasted() {
         return this._totalVotesCasted;
     }
