@@ -20,8 +20,22 @@ class Polls {
 
     // given pollId, returns Poll object
     // if pollId invalid, returns undefined ( make sure you check it )
-    getPoll(pollId) {
+    getPoll = (pollId) => {
         return this._polls.get(pollId);
+    }
+
+    // Given address of specific user, returns a list of all polls
+    // created from that address ( ofcourse which are locally available )
+    getPollsFromUser = (address) => {
+        const tmpPolls = [];
+
+        for (let [_pollId, _poll] of this._polls) {
+            if (address === _poll.creator) {
+                tmpPolls.push(_poll);
+            }
+        }
+
+        return tmpPolls;
     }
 
 }
