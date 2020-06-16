@@ -11,6 +11,11 @@ class User {
         return this._name;
     }
 
+    // appends pollId to end of array, using it polls can be looked up
+    addPoll = (pollId) => {
+        this.pollIds.push(pollId);
+    }
+
 }
 
 export default User;
