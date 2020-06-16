@@ -216,6 +216,17 @@ class Bridge {
     // Given pollId, returns choice made by `this.accout`
     getMyVoteByPollId = () => this.getVoteByPollIdAndAddress(pollId, this.account);
 
+    // given pollId & poll option index, returns poll options content ( i.e. statement in that option )
+    // option index must be >= 0 && < total #-of poll options present in specified pollId 
+    getPollOptionContentByPollIdAndIndex = (pollId, index) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getPollOptionContentByPollIdAndIndex(pollId, index)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
