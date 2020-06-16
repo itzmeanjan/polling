@@ -13,6 +13,26 @@ class Poll {
 
     }
 
+    get creator() {
+        return this._creator;
+    }
+
+    get title() {
+        return this._title;
+    }
+
+    get startTimeStamp() {
+        return this._startTimeStamp;
+    }
+
+    get endTimeStamp() {
+        return this._endTimeStamp;
+    }
+
+    get totalVotesCasted() {
+        return this._totalVotesCasted;
+    }
+
 }
 
 export default Poll;
