@@ -216,6 +216,70 @@ class Bridge {
     // Given pollId, returns choice made by `this.accout`
     getMyVoteByPollId = () => this.getVoteByPollIdAndAddress(pollId, this.account);
 
+    // given pollId & poll option index, returns poll options content ( i.e. statement in that option )
+    // 
+    // option index must be >= 0 && < total #-of poll options present in specified pollId
+    getPollOptionContentByPollIdAndIndex = (pollId, index) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getPollOptionContentByPollIdAndIndex(pollId, index)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // given pollId & poll option index, returns #-of votes casted on that option
+    // 
+    // option index must be >= 0 && < total #-of poll options present in specified pollId
+    getPollOptionVoteCountByPollIdAndIndex = (pollId, index) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getPollOptionVoteCountByPollIdAndIndex(pollId, index)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // given pollId ( globally uniquely identifies a poll ), returns status of poll as of now
+    // i.e. which option is having max vote & vote count it has
+    //
+    // this computation may be slow, due to that fact that it needs to traverse all options
+    // to determine which one is having max vote
+    //
+    // also this call will successfully go through, if and only if caller has already participated in this poll
+    getWinningOptionIndexAndVotesByPollId = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.getWinningOptionIndexAndVotesByPollId(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // given pollId, checks whether this poll is active anymore or not
+    hasPollEnded = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.hasPollEnded(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // given pollId, tries to declare result of this poll,
+    // 
+    // poll creator must be calling this methods, otherwise it'll fail
+    // poll must have ended
+    // emits event, that can be listened to from front end
+    announcePollResult = (pollId) => {
+
+        this.contract.methods.announcePollResult(pollId)
+            .send({ from: this.account })
+            .on('receipt', (_receipt) => { resolve(_receipt); })
+            .on('error', (_error) => { reject(_error); });
+
+    }
+
 }
 
 export default Bridge;
