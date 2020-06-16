@@ -1,5 +1,3 @@
-import Poll from "./poll";
-
 // Holder for all polls, each poll can be uniquely identified using pollId
 class Polls {
 
@@ -37,6 +35,14 @@ class Polls {
 
         return tmpPolls;
     }
+
+    // returns a list of active polls from a certain user ( given his/ her account address )
+    getActivePollsFromUser = (address) => this.getPollsFromUser(address)
+        .filter((_v) => !_v.hasPollEnded());
+
+    // returns a list of inactive polls from a certain user ( given his/ her account address )
+    getInactivePollsFromUser = (address) => this.getPollsFromUser(address)
+        .filter((_v) => _v.hasPollEnded());;
 
 }
 
