@@ -256,6 +256,16 @@ class Bridge {
 
     });
 
+    // given pollId, checks whether this poll is active anymore or not
+    hasPollEnded = (pollId) => new Promise((resolve, reject) => {
+
+        this.contract.methods.hasPollEnded(pollId)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
