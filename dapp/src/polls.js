@@ -44,6 +44,9 @@ class Polls {
     getInactivePollsFromUser = (address) => this.getPollsFromUser(address)
         .filter((_v) => _v.hasPollEnded());;
 
+    // given pollId, returns creator address of that poll
+    getUserByPollId = (pollId) => this.polls.get(pollId);
+
 }
 
 export default Polls;
