@@ -22,6 +22,17 @@ class Bridge {
             .on('error', (_error) => { reject(_error); });
     });
 
+    // returns max poll option count, set as of now, this can be modified using
+    // method defined exactly above
+    getMaxPollOptionCount = () => new Promise((resolve, reject) => {
+
+        this.contract.methods.getMaxPollOptionCount()
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
     // creates user account in dApp, given name of account holder
     createUser = (name) => new Promise((resolve, reject) => {
 
