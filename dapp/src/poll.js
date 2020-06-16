@@ -8,7 +8,7 @@ class Poll {
         this._endTimeStamp = endTimeStamp;
         this._totalVotesCasted = totalVotesCasted;
 
-        this.pollOptions = new Map();
+        this.pollOptions = [];
         this.votes = new Map();
 
     }
@@ -36,6 +36,33 @@ class Poll {
     // returns total votes casted
     get totalVotesCasted() {
         return this._totalVotesCasted;
+    }
+
+    // adds poll option to this poll
+    // pollOption will be holding info regarding that option
+    addPollOption(pollOption) {
+        this.pollOptions.push(pollOption);
+    }
+
+    // adds choice made by certain voter in this poll
+    addVote(address, choice) {
+        this.votes.set(address, choice);
+    }
+
+    // computes winning option in terms of received votes,
+    // returns a JS object of index & voteCount
+    getWinningOption() {
+        let winningIndex = 0;
+        let winningVoteCount = this.pollOptions[0].voteCount;
+
+        for (let i = 1; i < this.pollOptions.length; i++) {
+            if (winningVoteCount < this.pollOptions[i].voteCount) {
+                winningIndex = i;
+                winningVoteCount = this.pollOptions[i].voteCount;
+            }
+        }
+
+        return { index: winningIndex, voteCount: winningVoteCount };
     }
 
 }
