@@ -291,6 +291,26 @@ class Bridge {
 
     }
 
+    // given ethereum address, checks for existence of account in dApp
+    // only owner of smart contract can invoke this
+    userAccountExists = (addr) => new Promise((resolve, reject) => {
+
+        this.contract.methods.userAccountExists(addr)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    amIRegistered = () => new Promise((resolve, reject) => {
+
+        this.contract.methods.amIRegistered()
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
 }
 
 export default Bridge;
