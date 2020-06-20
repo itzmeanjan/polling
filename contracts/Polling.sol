@@ -496,4 +496,14 @@ contract Polling {
     {
         return polls[_pollId].endTimeStamp <= now;
     }
+
+    // given address of user account, checks existence
+    function userAccountExists(address _addr) public view returns (bool) {
+        return users[_addr].created;
+    }
+
+    // checks for existence of account of this function invoker ( msg.sender )
+    function amIRegistered() public view returns(bool) {
+        return userAccountExists(msg.sender);
+    }
 }
