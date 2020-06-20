@@ -322,6 +322,18 @@ class Bridge {
 
     });
 
+    // checks whether account invoking this method 
+    // is author of smart contract or not
+    amIAuthor = () => new Promise((resolve, reject) => {
+
+        this.getAuthor().then((_result) => {
+            resolve(_result === this.account);
+        }, (_error) => {
+            reject(_error);
+        });
+
+    });
+
 }
 
 export default Bridge;
