@@ -291,6 +291,49 @@ class Bridge {
 
     }
 
+    // given ethereum address, checks for existence of account in dApp
+    // only author of smart contract can invoke this
+    userAccountExists = (addr) => new Promise((resolve, reject) => {
+
+        this.contract.methods.userAccountExists(addr)
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // checks whether this function invoker is registered on dApp or not 
+    amIRegistered = () => new Promise((resolve, reject) => {
+
+        this.contract.methods.amIRegistered()
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // returns address of account, who's author of this smart contract
+    getAuthor = () => new Promise((resolve, reject) => {
+
+        this.contract.methods.author
+            .call({ from: this.account })
+            .then((_result) => { resolve(_result); },
+                (_error) => { reject(_error); });
+
+    });
+
+    // checks whether account invoking this method 
+    // is author of smart contract or not
+    amIAuthor = () => new Promise((resolve, reject) => {
+
+        this.getAuthor().then((_result) => {
+            resolve(_result === this.account);
+        }, (_error) => {
+            reject(_error);
+        });
+
+    });
+
 }
 
 export default Bridge;
