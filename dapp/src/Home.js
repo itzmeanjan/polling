@@ -1,4 +1,5 @@
 import React from 'react';
+import Register from './Register.js';
 
 // Home page of polling dApp
 class Home extends React.Component {
@@ -24,17 +25,14 @@ class Home extends React.Component {
     render() {
 
         if (this.needToRegister) {
-            return (
-                <div>
-                    <h1>To be implemented ...</h1>
-                </div>
-            )
+            return <Register bridge={this.props.bridge} />;
         }
+
         return (
             <div>
                 <h1>{this.state.status}</h1>
             </div>
-        )
+        );
 
     }
 
