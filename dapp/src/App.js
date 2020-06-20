@@ -3,6 +3,7 @@ import checkCompatibility from './checkCompatibility.js';
 import Polling from './contracts/Polling.json';
 import Bridge from './bridge.js';
 import './App.css';
+import Home from './Home.js';
 
 // main component, gets rendered first, after checking
 // browser compatibility, tries to create bridge for talking to 
@@ -46,11 +47,9 @@ class DApp extends React.Component {
       </div>);
     } else {
       if (this.state.bridge) {
-        return (<div className="dApp">
-          <h2 className="status">
-            {this.state.status}
-          </h2>
-        </div>);
+        // getting to home page, where passing bridge
+        // as a prop of react component
+        return <Home bridge={this.state.bridge} />;
       }
 
       return (
