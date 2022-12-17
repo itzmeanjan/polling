@@ -1,3 +1,7 @@
+> **Warning**
+
+**I'm stopping maintenance of this project !**
+
 # polling
 Ethereum based dApp for conducting Poll :boom:
 
@@ -27,6 +31,3 @@ _**More coming soon ...**_
 - Users will be notified of apperance of new poll, which they can plan to vote on
 - After user votes, we can show them progress of vote i.e. winner status
 - After activation period is over, user can announce result of poll, which will be published by emitting event
-
-
-**In active development, more coming soon ...**
